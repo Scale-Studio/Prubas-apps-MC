@@ -1311,7 +1311,7 @@
             if (type === 'tennis') playTennis();
             if (type === 'flash') playFlash();
             if (type === 'dict') playDict();
-            if(type === 'speech') playSpeech();
+            if (type === 'speech') playSpeech();
         }
         function closeGame() { document.getElementById('game-ui').style.display = 'none'; }
 
@@ -1608,8 +1608,13 @@
 
         function analyzePronunciation(heardText) {
             const target = DB.games.speech[spIdx].t;
-            const cleanHeard = heardText.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").trim();
-            const cleanTarget = target.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").trim();
+
+            // CORRECCIÓN: Limpieza agresiva.
+            // 1. Convertimos a minúsculas.
+            // 2. .replace(/[^a-z0-9\s]/g, "") -> Elimina CUALQUIER COSA que no sea letra o número (borra ?, !, ., etc).
+            // 3. .replace(/\s+/g, " ") -> Convierte múltiples espacios en uno solo para evitar errores de espaciado.
+            const cleanTarget = target.toLowerCase().replace(/[^a-z0-9\s]/g, "").trim().replace(/\s+/g, " ");
+            const cleanHeard = heardText.toLowerCase().replace(/[^a-z0-9\s]/g, "").trim().replace(/\s+/g, " ");
 
             const fb = document.getElementById('ai-feedback');
             const stat = document.getElementById('mic-status');
@@ -1617,24 +1622,34 @@
 
             fb.style.display = 'block';
 
-            // Lógica simple de comparación "AI"
+            // Lógica de comparación
             if (cleanHeard === cleanTarget) {
-                stat.innerHTML = "<span style='color:var(--success)'>¡Perfecto!</span>";
-                fb.innerHTML = `<strong>AI Analysis:</strong><br>Excellent pronunciation. Match: 100%`;
+                // ÉXITO
+                stat.innerHTML = "<span style='color:var(--success)'>¡Excelente!</span>";
+                fb.innerHTML = `<strong>AI Analysis:</strong><br>Pronunciation matched.`;
                 fb.style.borderLeft = "5px solid var(--success)";
-                speak("Excellent job! Perfect pronunciation.");
+
+                // Feedback auditivo positivo
+                speak("Good job!");
+
                 addXP(10);
                 nextBtn.classList.remove('hidden');
+
+                // Desactivar micrófono visualmente
+                document.getElementById('mic-trigger').classList.remove('listening');
             } else {
+                // ERROR
                 stat.innerText = "Intenta de nuevo";
+
+                // Mostramos lo que entendió la IA vs lo que esperaba (pero visualmente limpio)
                 fb.innerHTML = `
             <strong>AI Analysis:</strong><br>
-            Expected: "${target}"<br>
-            Heard: "<span style='color:var(--error)'>${heardText}</span>"<br>
-            <small>Asegúrate de pronunciar todas las palabras claramente.</small>
+            Expected: "${cleanTarget}"<br>
+            Heard: "<span style='color:var(--error)'>${cleanHeard}</span>"<br>
+            <small style="color:var(--text-sub)">Asegúrate de pronunciar cada palabra claramente.</small>
         `;
                 fb.style.borderLeft = "5px solid var(--error)";
-                speak("Close, but try again.");
+                speak("Try again.");
             }
         }
 
