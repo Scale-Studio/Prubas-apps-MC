@@ -1,727 +1,1650 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>English OS v20 (Ultimate)</title>
-<style>
-    :root {
-        --bg: #09090b;       /* Zinc 950 */
-        --surface: #18181b;  /* Zinc 900 */
-        --surface-hi: #27272a; /* Zinc 800 */
-        --primary: #8b5cf6;  /* Violet 500 */
-        --accent: #f43f5e;   /* Rose 500 */
-        --text: #f4f4f5;     /* Zinc 100 */
-        --text-dim: #a1a1aa; /* Zinc 400 */
-        --success: #22c55e;
-        --error: #ef4444;
-        --radius: 16px;
-    }
+    <title>English OS v17.0 (Omniscience)</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --accent: #f59e0b;
+            --bg: #f0f2f5;
+            --surface: #ffffff;
+            --text: #111827;
+            --text-sub: #4b5563;
+            --success: #10b981;
+            --error: #ef4444;
+            --chat-user: #dcf8c6;
+            --chat-bot: #fff;
+            --radius: 12px;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
-    
-    body { 
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
-        background: var(--bg); 
-        color: var(--text); 
-        margin: 0; height: 100vh; overflow: hidden; 
-        display: flex; flex-direction: column;
-    }
+        body.dark {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --text: #f3f4f6;
+            --text-sub: #94a3b8;
+            --chat-user: #056162;
+            --chat-bot: #262d31;
+        }
 
-    /* HEADER */
-    header { 
-        padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; 
-        border-bottom: 1px solid rgba(255,255,255,0.05); background: var(--bg); z-index: 10;
-        flex-shrink: 0; /* Evita que el header se aplaste */
-    }
-    .brand { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.5px; }
-    .brand span { color: var(--primary); }
-    .xp-pill { background: rgba(139, 92, 246, 0.15); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: var(--primary); border: 1px solid rgba(139, 92, 246, 0.3); }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+            user-select: none;
+        }
 
-    /* VIEWS */
-    .main-view { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; display: none; -webkit-overflow-scrolling: touch; }
-    .main-view.active { display: block; animation: fadeIn 0.3s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        /* FIX: Body fijo, el scroll ocurre dentro del container */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            /* Importante para efecto App */
+        }
 
-    .section-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 5px; }
-    .section-sub { color: var(--text-dim); margin-bottom: 25px; font-size: 0.9rem; }
+        /* SCROLL */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
 
-    /* CARDS & GRIDS */
-    .grid { display: grid; gap: 15px; grid-template-columns: 1fr; }
-    
-    /* CORRECCIÓN GRID RESPONSIVE: Se adapta automáticamente */
-    .grid-2 { display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
-    
-    .card { 
-        background: var(--surface); border-radius: var(--radius); padding: 20px; 
-        border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s;
-        display: flex; align-items: center; gap: 15px; position: relative; overflow: hidden;
-    }
-    .card:active { transform: scale(0.98); background: var(--surface-hi); }
-    .card-icon { font-size: 1.8rem; width: 50px; height: 50px; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    
-    /* GAME CARDS SPECIFIC */
-    .game-card { flex-direction: column; text-align: center; padding: 25px 15px; }
-    .game-card .card-icon { margin-bottom: 10px; background: transparent; font-size: 2.5rem; width: auto; height: auto; }
-    .game-title { font-weight: bold; font-size: 1rem; }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
 
-/* CORRECCIÓN SCROLL DESKTOP */
-    .overlay {
-        position: fixed; 
-        top: 0; 
-        left: 0; 
-        width: 100%; 
-        height: 100vh; /* Usamos 100vh para forzar la altura de la ventana */
-        background: var(--bg); 
-        z-index: 100;
-        display: none; 
-        flex-direction: column;
-    }
-    
-    .overlay-header { 
-        padding: 20px; 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        border-bottom: 1px solid rgba(255,255,255,0.05); 
-        flex-shrink: 0; /* El encabezado nunca se encoge */
-        background: var(--bg); /* Asegura que tape el contenido al hacer scroll */
-    }
-    
-    .close-btn { background: none; border: none; color: var(--text-dim); font-size: 1.5rem; cursor: pointer; }
-    
-    .overlay-body { 
-        flex: 1; /* Ocupa el espacio restante */
-        overflow-y: auto; /* Activa el scroll vertical */
-        min-height: 0; /* TRUCO IMPORTANTE: Evita que el flexbox rompa el scroll en PC */
-        
-        padding: 20px; 
-        
-        /* Espacio gigante abajo para asegurar que NADA se corte */
-        padding-bottom: 150px; 
-        
-        display: flex; 
-        flex-direction: column; 
-        align-items: stretch; /* En PC se ve mejor estirado que centrado */
-        justify-content: flex-start;
-    }
-    /* VOCAL STUDIO STYLES */
-    .target-container { margin-bottom: 30px; width: 100%; text-align: center; }
-    .word-span { 
-        display: inline-block; margin: 0 4px; padding: 2px 4px; border-radius: 4px; 
-        font-size: 1.6rem; font-weight: 700; color: var(--text-dim); border-bottom: 2px solid transparent;
-    }
-    .word-span.correct { color: var(--text); border-bottom-color: var(--success); text-shadow: 0 0 15px rgba(34, 197, 94, 0.4); }
-    .word-span.wrong { color: var(--error); opacity: 0.5; text-decoration: line-through; }
-    
-    .mic-btn {
-        width: 70px; height: 70px; border-radius: 50%; border: none;
-        background: var(--primary); color: white; font-size: 2rem;
-        cursor: pointer; box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
-        display: flex; align-items: center; justify-content: center; 
-        margin-top: auto; /* Empuja el botón al fondo si hay espacio */
-        margin-bottom: 20px;
-        flex-shrink: 0;
-    }
-    .mic-btn.active { background: var(--error); animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        /* HEADER */
+        header {
+            background: var(--surface);
+            padding: 0 20px;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 50;
+        }
 
-    /* GAME UI STYLES */
-    .q-text { font-size: 1.4rem; font-weight: bold; margin-bottom: 30px; text-align: center; }
-    .opt-btn { 
-        width: 100%; padding: 18px; margin-bottom: 10px; background: var(--surface); 
-        border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; 
-        font-weight: bold; color: var(--text); cursor: pointer; font-size: 1rem;
-    }
-    .opt-btn.correct { background: rgba(34, 197, 94, 0.2); border-color: var(--success); color: var(--success); }
-    .opt-btn.wrong { background: rgba(239, 68, 68, 0.2); border-color: var(--error); color: var(--error); }
-    
-    .scramble-box { min-height: 80px; border: 2px dashed var(--text-dim); border-radius: 12px; padding: 10px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; width: 100%; }
-    .chip { background: var(--surface-hi); padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
+        .brand {
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-    /* NAV */
-    nav { 
-        display: flex; border-top: 1px solid rgba(255,255,255,0.05); background: var(--bg);
-        position: fixed; bottom: 0; width: 100%; height: 70px; z-index: 50;
-        padding-bottom: env(safe-area-inset-bottom); /* Fix para iPhone X y nuevos */
-    }
-    .nav-btn { flex: 1; background: none; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; color: var(--text-dim); cursor: pointer; font-size: 0.7rem; }
-    .nav-btn.active { color: var(--primary); }
-    .nav-btn svg { width: 24px; height: 24px; fill: currentColor; }
-    
-    .hidden { display: none !important; }
+        .xp-pill {
+            background: var(--bg);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: var(--accent);
+        }
 
-    /* CORRECCIÓN FINAL: MEDIA QUERIES PARA CELULARES */
-    @media (max-width: 600px) {
-        .section-title { font-size: 1.3rem; }
-        .word-span { font-size: 1.1rem; margin: 0 2px; padding: 2px; }
-        .q-text { font-size: 1.2rem; }
-        .mic-btn { width: 60px; height: 60px; font-size: 1.5rem; }
-        .game-card .card-icon { font-size: 2rem; }
-        .opt-btn { padding: 14px; font-size: 0.9rem; }
-    }
-</style>
+        /* NAV */
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: var(--surface);
+            height: 70px;
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid var(--bg);
+            padding-bottom: env(safe-area-inset-bottom);
+            z-index: 100;
+        }
+
+        .nav-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: var(--text-sub);
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+
+        .nav-btn.active {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .nav-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        /* FIX: SCREEN CONTAINER (El área scrolleable) */
+        .screen-container {
+            position: absolute;
+            top: 60px;
+            /* Debajo del header */
+            bottom: 70px;
+            /* Encima del nav */
+            left: 0;
+            right: 0;
+            overflow-y: auto;
+            /* Permite scroll vertical */
+            -webkit-overflow-scrolling: touch;
+            /* Suavidad en iOS */
+            padding: 20px;
+        }
+
+        .screen {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto;
+            animation: fadeUp 0.3s ease-out;
+            padding-bottom: 20px;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: var(--text);
+            letter-spacing: -0.5px;
+            margin-top: 0;
+        }
+
+        p.sub {
+            color: var(--text-sub);
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        /* MODULES */
+        .mod-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            transition: 0.1s;
+        }
+
+        .card:active {
+            transform: scale(0.98);
+        }
+
+        .card.locked {
+            opacity: 0.6;
+            filter: grayscale(1);
+            pointer-events: none;
+        }
+
+        .card-head {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            width: 55px;
+            height: 55px;
+            background: var(--bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .card-check {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--success);
+            font-size: 1.5rem;
+            opacity: 0;
+        }
+
+        .card.done {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .card.done .card-check {
+            opacity: 1;
+        }
+
+        /* THEORY READER (ULTRA DETAILED) */
+        .reader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+        }
+
+        .reader-header {
+            padding: 15px;
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: var(--shadow);
+            flex-shrink: 0;
+        }
+
+        .reader-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .theory-block {
+            background: var(--surface);
+            padding: 25px;
+            border-radius: var(--radius);
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .theory-h3 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theory-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-sub);
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tag-rule {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .tag-warn {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .tag-pro {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .ex-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.95rem;
+        }
+
+        .ex-table td {
+            padding: 10px;
+            border-bottom: 1px solid var(--bg);
+            vertical-align: middle;
+        }
+
+        .ex-en {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .ex-es {
+            color: var(--text-sub);
+            font-size: 0.9rem;
+        }
+
+        .btn-speak-sm {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--primary);
+        }
+
+        /* GAMES */
+        .game-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .game-btn {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: var(--radius);
+            text-align: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .game-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .game-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            z-index: 250;
+            display: none;
+            flex-direction: column;
+        }
+
+        .game-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Engine Styles */
+        .q-card {
+            background: var(--surface);
+            padding: 30px;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .opt-btn {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: var(--bg);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .opt-btn.correct {
+            background: #d1fae5;
+            border-color: var(--success);
+            color: #065f46;
+        }
+
+        .opt-btn.wrong {
+            background: #fee2e2;
+            border-color: var(--error);
+            color: #991b1b;
+        }
+
+        .scramble-area {
+            min-height: 80px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.5);
+            width: 100%;
+        }
+
+        .chip {
+            background: var(--surface);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .det-word {
+            padding: 5px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 2px;
+            display: inline-block;
+            font-size: 1.2rem;
+        }
+
+        .det-word.err {
+            background: var(--error);
+            color: white;
+            text-decoration: line-through;
+        }
+
+        /* CHAT WHATSAPP STYLE */
+        .chat-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #e5ded8;
+            z-index: 250;
+            display: none;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            background: var(--surface);
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ccc;
+        }
+
+        .chat-feed {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background-image: linear-gradient(#e5ded8 2px, transparent 2px), linear-gradient(90deg, #e5ded8 2px, transparent 2px);
+            background-size: 20px 20px;
+            background-color: #f0f2f5;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .bubble {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            position: relative;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+            line-height: 1.4;
+        }
+
+        .bubble.bot {
+            background: var(--chat-bot);
+            align-self: flex-start;
+            border-top-left-radius: 0;
+            color: #000;
+        }
+
+        .bubble.user {
+            background: var(--chat-user);
+            align-self: flex-end;
+            border-top-right-radius: 0;
+            color: #000;
+        }
+
+        .chat-opts {
+            padding: 10px;
+            background: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .reply-pill {
+            background: white;
+            padding: 12px;
+            border-radius: 20px;
+            text-align: center;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid #ddd;
+        }
+
+        /* UTILS */
+        .btn-main {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0.9);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Flashcards specific */
+        .flash-scene {
+            width: 100%;
+            height: 200px;
+            perspective: 600px;
+            cursor: pointer;
+        }
+
+        .flash-card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flash-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flash-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            background: var(--surface);
+            color: var(--text);
+            border: 2px solid var(--primary);
+        }
+
+        .flash-back {
+            transform: rotateY(180deg);
+            background: var(--primary);
+            color: white;
+        }
+
+        /* ESTILOS NUEVOS PARA SPEAKING LAB */
+        .mic-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 20px auto;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+            border: none;
+        }
+
+        .mic-btn.listening {
+            background: #ef4444;
+            animation: pulse-red 1.5s infinite;
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        @keyframes pulse-red {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .speech-fb {
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.05);
+            margin-top: 15px;
+            text-align: left;
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        .diff-word {
+            color: var(--error);
+            font-weight: bold;
+            text-decoration: underline;
+        }
+    </style>
 </head>
+
 <body>
 
-<header>
-    <div class="brand"><span>English</span> OS 20</div>
-    <div class="xp-pill"><span id="xp-val">0</span> XP</div>
-</header>
-
-<div id="view-study" class="main-view active">
-    <div class="section-title">Biblioteca</div>
-    <div class="section-sub">Teoría esencial y gramática.</div>
-    <div class="grid" id="module-list">
+    <header>
+        <div class="brand">
+            <span style="font-size:1.5rem;">🧠</span> English OS 17
         </div>
-</div>
+        <div class="xp-pill" onclick="toggleTheme()">⚡ <span id="xp-disp">0</span></div>
+    </header>
 
-<div id="view-vocal" class="main-view">
-    <div class="section-title">Vocal Studio</div>
-    <div class="section-sub">Entrena tu pronunciación con IA.</div>
-    <div class="grid-2">
-        <div class="card game-card" onclick="openStudio('basics')">
-            <div class="card-icon">👋</div>
-            <div class="game-title">Básicos</div>
+    <div class="screen-container">
+
+        <div id="screen-home" class="screen active">
+            <h2>Biblioteca Maestra</h2>
+            <p class="sub">8 Tomos de Conocimiento Profundo.</p>
+            <div class="mod-grid" id="mod-list"></div>
         </div>
-        <div class="card game-card" onclick="openStudio('travel')">
-            <div class="card-icon">✈️</div>
-            <div class="game-title">Viajes</div>
-        </div>
-        <div class="card game-card" onclick="openStudio('business')">
-            <div class="card-icon">💼</div>
-            <div class="game-title">Negocios</div>
-        </div>
-        <div class="card game-card" onclick="openStudio('slang')">
-            <div class="card-icon">😎</div>
-            <div class="game-title">Slang</div>
-        </div>
-    </div>
-</div>
 
-<div id="view-arcade" class="main-view">
-    <div class="section-title">Arcade</div>
-    <div class="section-sub">Juegos para agilidad mental.</div>
-    <div class="grid-2">
-        <div class="card game-card" onclick="startGame('quiz')">
-            <div class="card-icon" style="color:#f472b6;">📝</div>
-            <div class="game-title">Quiz Pro</div>
-        </div>
-        <div class="card game-card" onclick="startGame('scramble')">
-            <div class="card-icon" style="color:#60a5fa;">🧩</div>
-            <div class="game-title">Constructor</div>
-        </div>
-        <div class="card game-card" onclick="startGame('tennis')">
-            <div class="card-icon" style="color:#a3e635;">🎾</div>
-            <div class="game-title">Tenis Verbal</div>
-        </div>
-        <div class="card game-card" onclick="startGame('detective')">
-            <div class="card-icon" style="color:#fbbf24;">🕵️</div>
-            <div class="game-title">Detective</div>
-        </div>
-    </div>
-</div>
-
-<div id="ui-studio" class="overlay">
-    <div class="overlay-header">
-        <button class="close-btn" onclick="closeOverlay()">✕</button>
-        <strong>Entrenamiento de Voz</strong>
-        <div style="width:24px"></div>
-    </div>
-    <div class="overlay-body">
-        <div id="target-display" class="target-container"></div>
-        <div id="feedback-msg" style="color:var(--text-dim); margin-bottom:20px;">Presiona el micro.</div>
-        <div class="mic-btn" id="mic-trigger" onclick="toggleMic()">🎙️</div>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button onclick="speakTarget()" style="padding:10px 20px; border-radius:20px; border:1px solid #333; background:#222; color:white;">🔈 Oír</button>
-            <button id="next-btn" class="hidden" onclick="nextPhrase()" style="padding:10px 20px; border-radius:20px; border:none; background:var(--success); color:black; font-weight:bold;">Siguiente ➜</button>
-	<button id="sites-fix-btn" class="hidden" onclick="openInNewTab()" style="
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    z-index: 999; padding: 20px; border-radius: 12px; background: #ef4444; 
-    color: white; font-weight: bold; border: none; cursor: pointer; 
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 80%; text-align: center;">
-    ⚠️ Google Sites bloquea el audio.<br><br>
-    CLIC AQUÍ PARA ABRIR EN PANTALLA COMPLETA Y ACTIVAR MICRO
-</button>
-
-
-
-
-
-        </div>
-    </div>
-</div>
-
-<div id="ui-reader" class="overlay">
-    <div class="overlay-header">
-        <button class="close-btn" onclick="closeOverlay()">✕</button>
-        <strong id="reader-title">Lección</strong>
-        <div style="width:24px"></div>
-    </div>
-    <div class="overlay-body" style="align-items: stretch; text-align: left;">
-        <div id="reader-content"></div>
-        <button onclick="finishModule()" style="margin-top:20px; padding:15px; width:100%; background:var(--success); border:none; border-radius:12px; font-weight:bold; cursor:pointer;">¡Lección Aprendida! (+100 XP)</button>
-
-    </div>
-</div>
-
-<div id="ui-game" class="overlay">
-    <div class="overlay-header">
-        <button class="close-btn" onclick="closeOverlay()">✕</button>
-        <strong id="game-title-disp">Juego</strong>
-        <span id="game-score">0 XP</span>
-    </div>
-    <div class="overlay-body" id="game-engine">
-        </div>
-</div>
-
-<nav>
-    <button class="nav-btn active" onclick="nav('study', this)">
-        <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
-        Teoría
-    </button>
-    <button class="nav-btn" onclick="nav('vocal', this)">
-        <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
-        Vocal
-    </button>
-    <button class="nav-btn" onclick="nav('arcade', this)">
-        <svg viewBox="0 0 24 24"><path d="M21.58 16.09l-1.09-7.66C20.21 6.46 18.52 5 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66C2.2 17.63 3.39 19 4.94 19h.06c.91 0 1.76-.34 2.44-1.04l.59-1.2h2.29l2.29 2.29c.65.65 1.7.65 2.35 0l2.29-2.29h2.29l.59 1.2c.68.7 1.53 1.04 2.44 1.04h.06c1.55 0 2.74-1.37 2.52-2.91z"/></svg>
-        Arcade
-    </button>
-</nav>
-
-<script>
-/* ======================== DATA ======================== */
-const DB = {
-    // Dentro de const DB = { ...
-    modules: [
-        {
-            id: "m1", icon: "🏛️", title: "El Verbo To Be", desc: "Anatomía completa del verbo esencial.",
-            content: [
-                {
-                    title: "1. Fundamentos: Identidad y Estado", tag: "REGLA",
-                    text: "El verbo 'To Be' es irregular. Se usa para dos cosas principales: Decir QUIÉN eres (Identidad) y CÓMO estás (Estado).",
-                    ex: [{en:"I am a doctor.", es:"Soy doctor."}, {en:"I am tired.", es:"Estoy cansado."}]
-                },
-                {
-                    title: "2. Contracciones", tag: "NATIVO",
-                    text: "En el inglés hablado, las contracciones son OBLIGATORIAS para sonar natural. Si dices 'I am', suenas como un robot.",
-                    ex: [{en:"I'm (I am)", es:"Soy/Estoy"}, {en:"You're (You are)", es:"Eres/Estás"}, {en:"It's (It is)", es:"Es/Está"}]
-                },
-                {
-                    title: "3. Negación", tag: "REGLA",
-                    text: "Simplemente coloca 'NOT' después del verbo. NUNCA uses 'No' antes (Error típico: I no am happy).",
-                    ex: [{en:"He is not ready.", es:"Él no está listo."}, {en:"We aren't friends.", es:"No somos amigos."}]
-                }
-            ]
-        },
-        {
-            id: "m2", icon: "⚙️", title: "Presente Simple", desc: "La mecánica de la rutina.",
-            content: [
-                {
-                    title: "1. La Regla de Oro (S)", tag: "PELIGRO",
-                    text: "Cuando el sujeto es HE, SHE o IT, al verbo se le agrega una 'S'. Olvidar esto es el error #1.",
-                    ex: [{en:"I work / She works", es:"Trabajo / Ella trabaja"}, {en:"He plays", es:"Él juega"}]
-                },
-                {
-                    title: "2. Auxiliares DO y DOES", tag: "GRAMATICA",
-                    text: "Para preguntar y negar usamos ayuda. DO (I/You/We/They) y DOES (He/She/It). Al usar DOES, el verbo pierde la 'S'.",
-                    ex: [{en:"Do you like pizza?", es:"¿Te gusta la pizza?"}, {en:"Does she work here?", es:"¿Trabaja ella aquí?"}]
-                }
-            ]
-        },
-        {
-            id: "m3", icon: "🔑", title: "Posesivos", desc: "De quién es qué.",
-            content: [
-                {
-                    title: "1. El error His/Her", tag: "ERROR COMUN",
-                    text: "En español 'su' sirve para él y ella. En inglés NO. Si es de ella: HER. Si es de él: HIS.",
-                    ex: [{en:"Maria loves her husband.", es:"María ama a SU esposo."}, {en:"John loves his wife.", es:"John ama a SU esposa."}]
-                },
-                {
-                    title: "2. Genitivo Sajón ('s)", tag: "TRUCO",
-                    text: "Agrega 's al dueño para indicar posesión rápida.",
-                    ex: [{en:"Tom's car.", es:"El auto de Tom."}, {en:"My mom's house.", es:"La casa de mi mamá."}]
-                }
-            ]
-        },
-        {
-            id: "m4", icon: "📍", title: "Preposiciones", desc: "El triángulo IN-ON-AT.",
-            content: [
-                {
-                    title: "1. La Lógica", tag: "VISUAL",
-                    text: "IN = Grande/Dentro (Países, Cajas). ON = Superficie/Línea (Mesas, Calles). AT = Punto exacto (Direcciones, Horas).",
-                    ex: [{en:"In London", es:"En Londres"}, {en:"On the table", es:"En la mesa"}, {en:"At 5:00 pm", es:"A las 5"}]
-                }
-            ]
-        },
-        {
-            id: "m5", icon: "⏰", title: "Rutinas", desc: "Vocabulario de vida.",
-            content: [
-                {
-                    title: "1. Have vs Eat", tag: "NATIVO",
-                    text: "Para las comidas, los nativos prefieren usar HAVE en lugar de EAT.",
-                    ex: [{en:"I have breakfast.", es:"Desayuno."}, {en:"She has lunch.", es:"Ella almuerza."}]
-                }
-            ]
-        },
-        {
-            id: "m6", icon: "🎨", title: "Adjetivos", desc: "El arte de describir.",
-            content: [
-                {
-                    title: "1. Siempre Antes", tag: "REGLA",
-                    text: "En inglés el adjetivo va ANTES del sustantivo. 'Red car' (Rojo auto).",
-                    ex: [{en:"A happy day.", es:"Un día feliz."}]
-                },
-                {
-                    title: "2. Nunca Plural", tag: "OJO",
-                    text: "Los adjetivos no tienen plural. No digas 'Beautifuls flowers'.",
-                    ex: [{en:"They are tall.", es:"Ellos son altos."}]
-                }
-            ]
-        },
-        {
-            id: "m7", icon: "💪", title: "Modal CAN", desc: "Poder y Habilidad.",
-            content: [
-                {
-                    title: "1. Sin 'TO'", tag: "REGLA",
-                    text: "Después de Can, el verbo va normal. Nunca uses 'To'. I can go (No 'I can to go').",
-                    ex: [{en:"She can swim.", es:"Ella puede nadar."}]
-                }
-            ]
-        },
-        {
-            id: "m8", icon: "🕰️", title: "Pasado Simple", desc: "Was y Were.",
-            content: [
-                {
-                    title: "1. Transformación", tag: "REGLA",
-                    text: "El pasado de AM/IS es WAS. El pasado de ARE es WERE.",
-                    ex: [{en:"I was tired.", es:"Estaba cansado."}, {en:"They were friends.", es:"Eran amigos."}]
-                }
-            ]
-        }
-    ],
-    voicePacks: {
-        basics: ["Hello friend", "How are you", "I am fine", "Good morning", "Thank you"],
-        travel: ["Where is the hotel", "I need a ticket", "How much is it", "The bill please"],
-        business: ["Nice to meet you", "Here is my card", "Lets have a meeting", "Send me an email"],
-        slang: ["What is up", "No way", "Chill out", "That is cool"]
-    },
-    games: {
-        quiz: [
-            {q:"I ___ happy.", a:"am", o:["is","am","are"]}, {q:"She ___ working.", a:"is", o:["am","is","are"]},
-            {q:"___ you tired?", a:"Are", o:["Is","Am","Are"]}, {q:"They ___ friends.", a:"are", o:["am","is","are"]}
-        ],
-        scramble: [
-            {t:"I am very happy", a:"I am very happy"}, {t:"Where is the bank", a:"Where is the bank"},
-            {t:"She can swim fast", a:"She can swim fast"}
-        ],
-        tennis: [
-            {v:"GO", o:["WENT","GOED"], a:"WENT"}, {v:"HAVE", o:["HAD","HAVED"], a:"HAD"},
-            {v:"SEE", o:["SAW","SEED"], a:"SAW"}, {v:"BUY", o:["BOUGHT","BUYED"], a:"BOUGHT"}
-        ],
-        detective: [
-            {bad:"She work here", good:"works", full:"She works here", err:"work"},
-            {bad:"I have 20 years", good:"am", full:"I am 20 years", err:"have"}
-        ]
-    }
-};
-
-/* ======================== APP STATE ======================== */
-let app = { xp: 0, currentPack: [], pIndex: 0 };
-let recognition;
-
-function init() {
-    renderModules();
-    setupSpeech();
-    updateXP(0);
-}
-
-function updateXP(n) { app.xp += n; document.getElementById('xp-val').innerText = app.xp; }
-
-function nav(tab, btn) {
-    document.querySelectorAll('.main-view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-'+tab).classList.add('active');
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    if(btn) btn.classList.add('active');
-}
-
-function closeOverlay() {
-    document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none');
-    if(recognition) recognition.stop();
-}
-
-function renderModules() {
-    const l = document.getElementById('module-list');
-    DB.modules.forEach(m => {
-        l.innerHTML += `
-        <div class="card" onclick="openReader('${m.id}')">
-            <div class="card-icon">${m.icon}</div>
-            <div><strong>${m.title}</strong><br><small style="color:var(--text-dim)">${m.desc}</small></div>
-        </div>`;
-    });
-}
-
-/* ======================== VOCAL STUDIO ======================== */
-function openStudio(pack) {
-    app.currentPack = DB.voicePacks[pack];
-    app.pIndex = 0;
-    document.getElementById('ui-studio').style.display = 'flex';
-    loadPhrase();
-}
-
-function loadPhrase() {
-    const phrase = app.currentPack[app.pIndex];
-    const c = document.getElementById('target-display');
-    c.innerHTML = '';
-    phrase.split(' ').forEach(w => {
-        const s = document.createElement('span'); s.className = 'word-span'; s.innerText = w;
-        s.dataset.word = w.replace(/[^\w]/g, '').toLowerCase();
-        c.appendChild(s);
-    });
-    document.getElementById('feedback-msg').innerText = "Presiona el micro y lee la frase.";
-    document.getElementById('next-btn').classList.add('hidden');
-}
-
-function nextPhrase() {
-    app.pIndex++;
-    if(app.pIndex >= app.currentPack.length) { closeOverlay(); updateXP(50); alert("¡Pack completado!"); }
-    else loadPhrase();
-}
-
-/* ======================== MOTOR DE VOZ MEJORADO ======================== */
-
-/* ======================== PARCHE PARA GOOGLE SITES ======================== */
-
-function openInNewTab() {
-    // Abre la URL interna del iframe en una pestaña nueva limpia
-    window.open(window.location.href, '_blank');
-}
-
-function setupSpeech() {
-    // 1. Verificación básica
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        alert("Tu navegador no soporta voz.");
-        return;
-    }
-
-    const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new Speech();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = () => {
-        document.getElementById('mic-trigger').classList.add('active');
-        document.getElementById('feedback-msg').innerHTML = "<span style='color:var(--primary)'>Escuchando...</span>";
-        // Si arranca, ocultamos el botón de error por si acaso estaba visible
-        document.getElementById('sites-fix-btn').classList.add('hidden');
-    };
-
-    recognition.onend = () => {
-        document.getElementById('mic-trigger').classList.remove('active');
-    };
-
-    // 2. DETECCIÓN DE BLOQUEO DE GOOGLE SITES
-    recognition.onerror = (event) => {
-        document.getElementById('mic-trigger').classList.remove('active');
-        console.error("Error de voz:", event.error);
-
-        if (event.error === 'not-allowed' || event.error === 'service-not-allowed' || event.error === 'permission-denied') {
-            // AQUÍ ESTÁ LA CLAVE: Si Google bloquea, mostramos el botón rojo
-            document.getElementById('sites-fix-btn').classList.remove('hidden');
-            document.getElementById('feedback-msg').innerHTML = "<span style='color:var(--error)'>Bloqueo detectado. Pulsa el botón rojo.</span>";
-        } else {
-            document.getElementById('feedback-msg').innerHTML = "<span style='color:var(--error)'>No te escuché. Intenta de nuevo.</span>";
-        }
-    };
-
-    recognition.onresult = (e) => {
-        const spoken = e.results[0][0].transcript.toLowerCase();
-        const cleanSpoken = spoken.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").split(' ');
-        
-        const spans = document.querySelectorAll('.word-span');
-        let hits = 0;
-
-        spans.forEach(span => {
-            if(cleanSpoken.includes(span.dataset.word)) {
-                span.className = 'word-span correct';
-                hits++;
-            } else {
-                span.className = 'word-span wrong';
-            }
-        });
-
-        if(hits/spans.length > 0.5) {
-            document.getElementById('feedback-msg').innerHTML = `<span style='color:var(--success)'>¡Bien! ("${spoken}")</span>`;
-            document.getElementById('next-btn').classList.remove('hidden');
-            speakTarget();
-        } else {
-            document.getElementById('feedback-msg').innerHTML = `<span style='color:var(--error)'>Intenta de nuevo. ("${spoken}")</span>`;
-        }
-    };
-}
-
-function toggleMic() { 
-    if(!recognition) {
-        setupSpeech(); // Intentar configurar si no existe
-        if(!recognition) return; // Si sigue fallando, salir
-    }
-
-    try {
-        if(document.getElementById('mic-trigger').classList.contains('active')) {
-            recognition.stop();
-        } else {
-            recognition.start();
-        }
-    } catch(e) {
-        console.error("Error al iniciar micrófono:", e);
-        // A veces el navegador se queda "pegado", reiniciamos la instancia
-        setupSpeech();
-    }
-}
-function speakTarget() {
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(app.currentPack[app.pIndex]);
-    u.lang = 'en-US'; window.speechSynthesis.speak(u);
-}
-
-/* ======================== GAME ENGINE ======================== */
-let gIndex = 0;
-function startGame(type) {
-    document.getElementById('ui-game').style.display = 'flex';
-    gIndex = 0;
-    if(type === 'quiz') playQuiz();
-    if(type === 'scramble') playScramble();
-    if(type === 'tennis') playTennis();
-    if(type === 'detective') playDetective();
-}
-
-// 1. QUIZ
-function playQuiz() {
-    const div = document.getElementById('game-engine');
-    if(gIndex >= DB.games.quiz.length) { div.innerHTML = "<h3>¡Fin del Juego!</h3>"; updateXP(20); return; }
-    const q = DB.games.quiz[gIndex];
-    
-    div.innerHTML = `<div class="q-text">${q.q.replace('___', '_____')}</div><div id="opts"></div>`;
-    q.o.forEach(opt => {
-        const b = document.createElement('button'); b.className = 'opt-btn'; b.innerText = opt;
-        b.onclick = () => {
-            if(opt === q.a) { b.classList.add('correct'); setTimeout(()=>{ gIndex++; playQuiz(); }, 800); }
-            else b.classList.add('wrong');
-        };
-        document.getElementById('opts').appendChild(b);
-    });
-}
-
-// 2. SCRAMBLE
-function playScramble() {
-    const div = document.getElementById('game-engine');
-    if(gIndex >= DB.games.scramble.length) { div.innerHTML = "<h3>¡Bien Hecho!</h3>"; updateXP(20); return; }
-    const d = DB.games.scramble[gIndex];
-    
-    div.innerHTML = `<div class="q-text">Ordena:</div><div id="target" class="scramble-box" style="border-color:var(--success)"></div><div id="source" class="scramble-box"></div>`;
-    
-    const t = document.getElementById('target');
-    const s = document.getElementById('source');
-    
-    d.t.split(' ').sort(()=>Math.random()-0.5).forEach(w => {
-        const c = document.createElement('div'); c.className = 'chip'; c.innerText = w;
-        c.onclick = () => { 
-            if(c.parentNode === s) t.appendChild(c); else s.appendChild(c);
-            if(Array.from(t.children).map(x=>x.innerText).join(' ') === d.a) { setTimeout(()=>{ gIndex++; playScramble(); }, 800); }
-        };
-        s.appendChild(c);
-    });
-}
-
-// 3. TENNIS
-function playTennis() {
-    const div = document.getElementById('game-engine');
-    if(gIndex >= DB.games.tennis.length) { div.innerHTML = "<h3>¡Set Ganado!</h3>"; updateXP(20); return; }
-    const d = DB.games.tennis[gIndex];
-    div.innerHTML = `<div class="q-text">Pasado de:<br><h1 style="font-size:3rem;margin:10px">${d.v}</h1></div><div id="opts"></div>`;
-    d.o.forEach(opt => {
-        const b = document.createElement('button'); b.className = 'opt-btn'; b.innerText = opt;
-        b.onclick = () => {
-            if(opt === d.a) { b.classList.add('correct'); setTimeout(()=>{ gIndex++; playTennis(); }, 600); }
-            else b.classList.add('wrong');
-        };
-        document.getElementById('opts').appendChild(b);
-    });
-}
-
-// 4. DETECTIVE
-function playDetective() {
-    const div = document.getElementById('game-engine');
-    if(gIndex >= DB.games.detective.length) { div.innerHTML = "<h3>¡Caso Cerrado!</h3>"; updateXP(20); return; }
-    const d = DB.games.detective[gIndex];
-    div.innerHTML = `<div class="q-text">Encuentra el error:</div><div id="words" style="text-align:center; font-size:1.4rem;"></div>`;
-    
-    d.bad.split(' ').forEach(w => {
-        const s = document.createElement('span'); s.innerText = w + ' '; s.style.cursor="pointer";
-        s.onclick = () => {
-            if(w.includes(d.err)) { 
-                s.style.color = "var(--success)"; s.innerText = d.good + ' '; 
-                setTimeout(()=>{ gIndex++; playDetective(); }, 1000); 
-            } else s.style.opacity = 0.5;
-        };
-        document.getElementById('words').appendChild(s);
-    });
-}
-/* === LOGICA DEL LECTOR DE TEORÍA === */
-function openReader(id) {
-    const m = DB.modules.find(x => x.id === id);
-    if(!m) return;
-    
-    document.getElementById('reader-title').innerText = m.title;
-    const c = document.getElementById('reader-content');
-    c.innerHTML = '';
-
-    m.content.forEach(sect => {
-        // Estilos dinámicos para las etiquetas
-        let color = '#a1a1aa';
-        if(sect.tag === 'REGLA') color = '#60a5fa'; // Azul
-        if(sect.tag === 'PELIGRO' || sect.tag === 'ERROR COMUN') color = '#f87171'; // Rojo
-        if(sect.tag === 'NATIVO' || sect.tag === 'TRUCO') color = '#fbbf24'; // Amarillo
-
-        c.innerHTML += `
-        <div style="background:var(--surface-hi); padding:20px; border-radius:12px; margin-bottom:15px; border:1px solid rgba(255,255,255,0.05);">
-            <div style="font-weight:800; color:var(--primary); margin-bottom:10px; display:flex; align-items:center; gap:10px;">
-                <span style="background:${color}20; color:${color}; padding:2px 8px; border-radius:6px; font-size:0.7rem;">${sect.tag}</span>
-                ${sect.title}
+        <div id="screen-arcade" class="screen">
+            <h2>Sala de Entrenamiento</h2>
+            <p class="sub">Ejercicios de alta intensidad.</p>
+            <div class="game-grid">
+                <div class="game-btn" onclick="startGame('quiz')">
+                    <div style="font-size:2.5rem;">📝</div><strong>Quiz Pro</strong>
+                </div>
+                <div class="game-btn" onclick="startGame('scramble')">
+                    <div style="font-size:2.5rem;">🧩</div><strong>Constructor</strong>
+                </div>
+                <div class="game-btn" onclick="startGame('detective')">
+                    <div style="font-size:2.5rem;">🕵️</div><strong>Detective</strong>
+                </div>
+                <div class="game-btn" onclick="startGame('tennis')">
+                    <div style="font-size:2.5rem;">🎾</div><strong>Tenis Verbal</strong>
+                </div>
+                <div class="game-btn" onclick="startGame('flash')">
+                    <div style="font-size:2.5rem;">🎴</div><strong>Memoria</strong>
+                </div>
+                <div class="game-btn" onclick="startGame('dict')">
+                    <div style="font-size:2.5rem;">🎧</div><strong>Oído Absoluto</strong>
+                </div>
+                <div class="game-btn" onclick="startGame('speech')">
+                    <div style="font-size:2.5rem;">🎙️</div><strong>Speaking Lab</strong>
+                </div>
             </div>
-            <div style="color:var(--text-dim); line-height:1.6; margin-bottom:15px;">${sect.text}</div>
-            <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:8px;">
-                ${sect.ex.map(e => `
-                    <div style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <div style="font-weight:bold; color:var(--text);">${e.en}</div>
-                            <div style="font-size:0.85rem; color:var(--text-dim);">${e.es}</div>
-                        </div>
-                        <button onclick="speak('${e.en}')" style="background:none; border:none; cursor:pointer; font-size:1.2rem;">🔊</button>
+        </div>
+
+        <div id="screen-chat" class="screen">
+            <h2>Simulador Social</h2>
+            <p class="sub">Roleplay en tiempo real.</p>
+            <div class="mod-grid">
+                <div class="card" onclick="openChat('intro')">
+                    <div class="card-head">
+                        <div class="card-icon">👋</div>
+                        <div><strong>Networking</strong><br><small>Primera impresión</small></div>
                     </div>
-                `).join('')}
+                </div>
+                <div class="card" onclick="openChat('job')">
+                    <div class="card-head">
+                        <div class="card-icon">💼</div>
+                        <div><strong>Entrevista</strong><br><small>Nivel Ejecutivo</small></div>
+                    </div>
+                </div>
+                <div class="card" onclick="openChat('coffee')">
+                    <div class="card-head">
+                        <div class="card-icon">☕</div>
+                        <div><strong>Cafetería</strong><br><small>Pedir y pagar</small></div>
+                    </div>
+                </div>
             </div>
+        </div>
+
+        <div id="screen-profile" class="screen">
+            <h2>Expediente</h2>
+            <div class="card" style="text-align:center;">
+                <div style="font-size:3rem;">🎓</div>
+                <h3>Certificado de Omnisciencia</h3>
+                <p id="cert-lock">Desbloquea a los 5000 XP</p>
+                <div id="cert-display" class="hidden"
+                    style="margin-top:20px; padding:20px; border:5px double var(--primary);">
+                    <h1 style="font-family:serif; color:var(--primary-dark);">CERTIFICADO</h1>
+                    <p>Se otorga el rango de</p>
+                    <h2>SUPREME LEARNER</h2>
+                    <p>English OS v17.0</p>
+                </div>
+            </div>
+            <button onclick="resetApp()"
+                style="margin-top:30px; background:none; border:none; color:var(--error); width:100%;">Reiniciar
+                Sistema</button>
+        </div>
+
+    </div>
+    <div id="reader" class="reader-overlay">
+        <div class="reader-header">
+            <button onclick="closeReader()" style="border:none; background:none; font-size:1.5rem;">←</button>
+            <strong id="reader-title">Módulo</strong>
+        </div>
+        <div id="reader-content" class="reader-content"></div>
+        <div style="padding:15px; background:var(--surface); border-top:1px solid rgba(0,0,0,0.1); flex-shrink: 0;">
+            <button class="btn-main" onclick="finishModule()">Completar Lección (+100 XP)</button>
+        </div>
+    </div>
+
+    <div id="game-ui" class="game-overlay">
+        <div class="reader-header">
+            <button onclick="closeGame()" style="border:none; background:none;">✕ Salir</button>
+            <strong>Entrenamiento</strong>
+            <span id="game-score" style="margin-left: auto; font-weight:bold;">0 XP</span>
+        </div>
+        <div class="game-body" id="game-engine">
+        </div>
+    </div>
+
+    <div id="chat-ui" class="chat-overlay">
+        <div class="chat-header">
+            <button onclick="closeChat()"
+                style="border:none; background:none; font-size:1.5rem; color:var(--primary);">←</button>
+            <div class="chat-avatar"
+                style="background:#008069; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">
+                AI</div>
+            <div>
+                <div style="font-weight:bold;">English Coach</div>
+                <div style="font-size:0.75rem; color:var(--text-sub);">En línea</div>
+            </div>
+        </div>
+        <div id="chat-feed" class="chat-feed"></div>
+        <div id="chat-opts" class="chat-opts"></div>
+    </div>
+
+    <nav class="nav-bar">
+        <button class="nav-btn active" onclick="nav('home', this)"><svg viewBox="0 0 24 24">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+            </svg>Estudio</button>
+        <button class="nav-btn" onclick="nav('arcade', this)"><svg viewBox="0 0 24 24">
+                <path
+                    d="M21.58 16.09l-1.09-7.66C20.21 6.46 18.52 5 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66C2.2 17.63 3.39 19 4.94 19h.06c.91 0 1.76-.34 2.44-1.04l.59-1.2h2.29l2.29 2.29c.65.65 1.7.65 2.35 0l2.29-2.29h2.29l.59 1.2c.68.7 1.53 1.04 2.44 1.04h.06c1.55 0 2.74-1.37 2.52-2.91z" />
+            </svg>Arcade</button>
+        <button class="nav-btn" onclick="nav('chat', this)"><svg viewBox="0 0 24 24">
+                <path
+                    d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z" />
+            </svg>Chat</button>
+        <button class="nav-btn" onclick="nav('profile', this)"><svg viewBox="0 0 24 24">
+                <path
+                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+            </svg>Perfil</button>
+    </nav>
+
+    <script>
+        /* ====================================================================================
+           1. OMNISCIENCE DATABASE (TEORÍA EXPANDIDA AL MÁXIMO)
+           ==================================================================================== */
+        const DB = {
+            modules: [
+                {
+                    id: "m1", icon: "🏛️", title: "El Verbo To Be", desc: "Anatomía completa del verbo esencial.",
+                    content: [
+                        {
+                            title: "1. Fundamentos: Identidad y Estado",
+                            tag: "RULE",
+                            text: "El verbo 'To Be' es irregular y único. No sigue las reglas de otros verbos. Se usa para dos cosas principales: Decir QUIÉN eres (Identidad) y CÓMO estás (Estado).",
+                            ex: [
+                                { en: "I am a doctor.", es: "Soy doctor (Identidad).", a: "I am a doctor" },
+                                { en: "I am tired.", es: "Estoy cansado (Estado).", a: "I am tired" }
+                            ]
+                        },
+                        {
+                            title: "2. Contracciones (El habla real)",
+                            tag: "NATIVE",
+                            text: "En el inglés hablado y escrito informal (emails, chats), las contracciones son OBLIGATORIAS para sonar natural. Si dices 'I am', suenas como un robot o como si estuvieras enojado.",
+                            ex: [
+                                { en: "I'm (I am)", es: "Soy/Estoy", a: "I'm" },
+                                { en: "You're (You are)", es: "Eres/Estás", a: "You're" },
+                                { en: "He's / She's / It's", es: "Es/Está", a: "He's. She's. It's" },
+                                { en: "We're / They're", es: "Somos/Son", a: "We're. They're" }
+                            ]
+                        },
+                        {
+                            title: "3. Negación Absoluta",
+                            tag: "RULE",
+                            text: "Para negar, simplemente coloca 'NOT' después del verbo. NUNCA uses 'No' antes del verbo (Error típico: I no am happy).",
+                            ex: [
+                                { en: "He is not ready.", es: "Él no está listo.", a: "He is not ready" },
+                                { en: "Contracción: He isn't ready.", es: "(Más común)", a: "He isn't ready" },
+                                { en: "Contracción: He's not ready.", es: "(También válida)", a: "He's not ready" }
+                            ]
+                        },
+                        {
+                            title: "4. Interrogación (El Salto)",
+                            tag: "RULE",
+                            text: "Para preguntar, el verbo 'salta' al principio de la oración. El sujeto pasa a segundo lugar.",
+                            ex: [
+                                { en: "Afirmación: You are busy.", es: "Estás ocupado.", a: "You are busy" },
+                                { en: "Pregunta: Are you busy?", es: "¿Estás ocupado?", a: "Are you busy?" },
+                                { en: "Afirmación: She is happy.", es: "Ella es feliz.", a: "She is happy" },
+                                { en: "Pregunta: Is she happy?", es: "¿Es ella feliz?", a: "Is she happy?" }
+                            ]
+                        },
+                        {
+                            title: "5. Respuestas Cortas (Cortesía)",
+                            tag: "PRO",
+                            text: "En inglés es descortés responder solo 'Yes' o 'No'. Debes usar la 'Short Answer' repitiendo el sujeto y el verbo.",
+                            ex: [
+                                { en: "Q: Are you tired?", es: "¿Estás cansado?", a: "Are you tired?" },
+                                { en: "A: Yes, I am.", es: "Sí (Correcto).", a: "Yes, I am" },
+                                { en: "A: No, I'm not.", es: "No (Correcto).", a: "No, I'm not" }
+                            ]
+                        },
+                        {
+                            title: "6. Trampas: Edad, Clima y Hambre",
+                            tag: "WARN",
+                            text: "En español 'tenemos' años, frío, calor, hambre o miedo. En inglés, NO usamos 'Have' (tener). Usamos 'To Be'. Tú ERES tu edad. Tú ESTÁS hambriento.",
+                            ex: [
+                                { en: "I am 40 years old.", es: "Tengo 40 años.", a: "I am 40 years old" },
+                                { en: "I am hungry.", es: "Tengo hambre.", a: "I am hungry" },
+                                { en: "It is cold.", es: "Hace frío.", a: "It is cold" },
+                                { en: "I am afraid.", es: "Tengo miedo.", a: "I am afraid" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: "m2", icon: "⚙️", title: "Presente Simple", desc: "La mecánica de la rutina.",
+                    content: [
+                        {
+                            title: "1. Concepto Base",
+                            tag: "RULE",
+                            text: "Se usa para rutinas, hechos permanentes y verdades universales. NO se usa para lo que está pasando ahora mismo (eso es continuo).",
+                            ex: [
+                                { en: "I work in an office.", es: "Trabajo en una oficina (Permanente).", a: "I work in an office" },
+                                { en: "Water boils at 100 degrees.", es: "El agua hierve a 100 grados (Hecho).", a: "Water boils at 100 degrees" }
+                            ]
+                        },
+                        {
+                            title: "2. La Regla de Oro (3ra Persona)",
+                            tag: "WARN",
+                            text: "Cuando el sujeto es HE, SHE o IT, el verbo cambia. Generalmente se añade una 'S'. Olvidar esto es el error gramatical más grave en niveles básicos.",
+                            ex: [
+                                { en: "I play / She plays", es: "Juego / Ella juega", a: "I play. She plays" },
+                                { en: "We live / He lives", es: "Vivimos / Él vive", a: "We live. He lives" }
+                            ]
+                        },
+                        {
+                            title: "3. Ortografía de la 'S'",
+                            tag: "TIP",
+                            text: "Si el verbo termina en O, CH, SH, SS, X, añadimos 'ES'. Si termina en consonante + Y, cambiamos a 'IES'.",
+                            ex: [
+                                { en: "Go -> Goes", es: "Ir", a: "Goes" },
+                                { en: "Watch -> Watches", es: "Mirar", a: "Watches" },
+                                { en: "Study -> Studies", es: "Estudiar", a: "Studies" },
+                                { en: "Play -> Plays", es: "Jugar (Vocal + Y = Solo S)", a: "Plays" }
+                            ]
+                        },
+                        {
+                            title: "4. Auxiliares DO y DOES",
+                            tag: "GRAM",
+                            text: "Para preguntar y negar, necesitamos ayuda. Usamos DO (I/You/We/They) y DOES (He/She/It). Nota: Cuando usas DOES, el verbo principal pierde la 'S'. El DOES ya se la llevó.",
+                            ex: [
+                                { en: "Do you like pizza?", es: "¿Te gusta la pizza?", a: "Do you like pizza?" },
+                                { en: "Does she work here?", es: "¿Ella trabaja aquí? (Work sin S)", a: "Does she work here?" },
+                                { en: "He doesn't know.", es: "Él no sabe.", a: "He doesn't know" }
+                            ]
+                        },
+                        {
+                            title: "5. Adverbios de Frecuencia",
+                            tag: "POS",
+                            text: "Indican qué tan seguido haces algo. Van ANTES del verbo principal, pero DESPUÉS del verbo To Be.",
+                            ex: [
+                                { en: "I always drink coffee.", es: "Siempre tomo café.", a: "I always drink coffee" },
+                                { en: "She is never late.", es: "Ella nunca llega tarde (Después de IS).", a: "She is never late" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: "m3", icon: "🔑", title: "Posesivos y Genitivos", desc: "De quién es qué.",
+                    content: [
+                        {
+                            title: "1. Adjetivos Posesivos",
+                            tag: "RULE",
+                            text: "Van antes del objeto. Deben concordar con el poseedor, no con el objeto.",
+                            ex: [
+                                { en: "My (Mi)", es: "My house", a: "My house" },
+                                { en: "Your (Tu)", es: "Your car", a: "Your car" },
+                                { en: "His (De él)", es: "His sister", a: "His sister" },
+                                { en: "Her (De ella)", es: "Her brother", a: "Her brother" },
+                                { en: "Its (De eso)", es: "Its color", a: "Its color" },
+                                { en: "Our (Nuestro)", es: "Our team", a: "Our team" },
+                                { en: "Their (De ellos)", es: "Their problem", a: "Their problem" }
+                            ]
+                        },
+                        {
+                            title: "2. El Error His/Her",
+                            tag: "WARN",
+                            text: "En español 'su' sirve para él y ella. En inglés NO. Si hablas de María, es HER casa. Si hablas de Juan, es HIS casa.",
+                            ex: [
+                                { en: "Maria loves her husband.", es: "María ama a su esposo.", a: "Maria loves her husband" },
+                                { en: "John loves his wife.", es: "John ama a su esposa.", a: "John loves his wife" }
+                            ]
+                        },
+                        {
+                            title: "3. El Genitivo Sajón ('s)",
+                            tag: "NATIVE",
+                            text: "Una forma eficiente de indicar posesión. Agrega 's al dueño. Si el dueño ya termina en s (plural), solo agrega el apóstrofe '.",
+                            ex: [
+                                { en: "The manager's office.", es: "La oficina del gerente.", a: "The manager's office" },
+                                { en: "My parents' house.", es: "La casa de mis padres (Plural).", a: "My parents' house" },
+                                { en: "Tom and Jerry's car.", es: "El auto de Tom y Jerry (Compartido).", a: "Tom and Jerry's car" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: "m4", icon: "📍", title: "Preposiciones (In/On/At)", desc: "El triángulo de la ubicación.",
+                    content: [
+                        {
+                            title: "1. La Lógica del Triángulo",
+                            tag: "TIP",
+                            text: "Imagina un triángulo invertido. Arriba (IN) es grande y general. Al medio (ON) es más específico. Abajo (AT) es un punto exacto.",
+                            ex: [
+                                { en: "IN: Países, Ciudades, Siglos, Años, Meses.", es: "", a: "" },
+                                { en: "ON: Calles, Avenidas, Días, Fechas completas.", es: "", a: "" },
+                                { en: "AT: Direcciones exactas, Horas, Lugares específicos.", es: "", a: "" }
+                            ]
+                        },
+                        {
+                            title: "2. IN (El Contenedor)",
+                            tag: "RULE",
+                            text: "Úsalo cuando algo está 'dentro' de un espacio 3D, o áreas geográficas.",
+                            ex: [
+                                { en: "In the box.", es: "En la caja.", a: "In the box" },
+                                { en: "In New York.", es: "En Nueva York.", a: "In New York" },
+                                { en: "In the morning.", es: "Por la mañana.", a: "In the morning" }
+                            ]
+                        },
+                        {
+                            title: "3. ON (La Superficie)",
+                            tag: "RULE",
+                            text: "Úsalo cuando algo toca una superficie, o para días.",
+                            ex: [
+                                { en: "On the table.", es: "Sobre la mesa.", a: "On the table" },
+                                { en: "On the wall.", es: "En la pared.", a: "On the wall" },
+                                { en: "On Monday.", es: "El lunes.", a: "On Monday" }
+                            ]
+                        },
+                        {
+                            title: "4. AT (El Punto)",
+                            tag: "RULE",
+                            text: "Úsalo para ubicaciones precisas o eventos.",
+                            ex: [
+                                { en: "At the door.", es: "En la puerta.", a: "At the door" },
+                                { en: "At the airport.", es: "En el aeropuerto.", a: "At the airport" },
+                                { en: "At 5:00 pm.", es: "A las 5.", a: "At 5 pm" }
+                            ]
+                        },
+                        {
+                            title: "5. Transporte y Medios",
+                            tag: "NATIVE",
+                            text: "Regla curiosa: Si puedes caminar dentro del vehículo, es ON (Bus, Tren, Avión). Si te tienes que agachar/sentar, es IN (Car, Taxi). Para tecnología es ON (On TV, On the phone, On the internet).",
+                            ex: [
+                                { en: "I am on the bus.", es: "En el bus.", a: "I am on the bus" },
+                                { en: "I saw it on TV.", es: "Lo vi en TV.", a: "I saw it on TV" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: "m5", icon: "⏰", title: "Rutinas Diarias", desc: "Vocabulario de vida.",
+                    content: [
+                        {
+                            title: "1. Despertar vs Levantarse",
+                            tag: "VOCAB",
+                            text: "'Wake up' es abrir los ojos. 'Get up' es salir físicamente de la cama.",
+                            ex: [{ en: "I wake up at 7, but get up at 7:15.", a: "I wake up at 7, but get up at 7:15" }]
+                        },
+                        {
+                            title: "2. Comidas (Have vs Eat)",
+                            tag: "NATIVE",
+                            text: "Aunque 'Eat breakfast' es gramaticalmente correcto, los nativos prefieren usar el verbo HAVE para las comidas.",
+                            ex: [
+                                { en: "I have breakfast.", es: "Desayuno.", a: "I have breakfast" },
+                                { en: "She has lunch.", es: "Ella almuerza.", a: "She has lunch" },
+                                { en: "We have dinner.", es: "Cenamos.", a: "We have dinner" }
+                            ]
+                        },
+                        {
+                            title: "3. Conectores de Secuencia",
+                            tag: "PRO",
+                            text: "Para no sonar como una lista de compras, usa conectores: First (primero), Then (luego), After that (después de eso), Finally (finalmente).",
+                            ex: [{ en: "First I eat, then I shower.", es: "Primero como, luego me ducho.", a: "First I eat, then I shower" }]
+                        }
+                    ]
+                },
+                {
+                    id: "m6", icon: "🎨", title: "Adjetivos", desc: "El arte de describir.",
+                    content: [
+                        {
+                            title: "1. Posición Fija",
+                            tag: "RULE",
+                            text: "En español decimos 'Auto rojo'. En inglés es al revés: 'Red car'. El adjetivo siempre precede al sustantivo.",
+                            ex: [{ en: "A difficult exam.", es: "Un examen difícil.", a: "A difficult exam" }]
+                        },
+                        {
+                            title: "2. Invariabilidad",
+                            tag: "WARN",
+                            text: "Los adjetivos en inglés son neutros. No tienen género (masculino/femenino) ni número (singular/plural). NUNCA añadas una 'S' a un adjetivo.",
+                            ex: [
+                                { en: "He is tall / She is tall.", es: "Él es alto / Ella es alta.", a: "He is tall. She is tall" },
+                                { en: "They are tall.", es: "Ellos son altos (NO talls).", a: "They are tall" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: "m7", icon: "💪", title: "Modal CAN", desc: "Habilidad y Permiso.",
+                    content: [
+                        {
+                            title: "1. El Verbo Rebelde",
+                            tag: "RULE",
+                            text: "CAN es un verbo modal. No usa 'S' en tercera persona (She can, NO She cans). No usa 'Do/Does'. No usa 'To'.",
+                            ex: [{ en: "She can swim.", es: "Ella puede nadar.", a: "She can swim" }]
+                        },
+                        {
+                            title: "2. Pronunciación (Can vs Can't)",
+                            tag: "NATIVE",
+                            text: "La diferencia es sutil. En 'I can go', la palabra 'can' se pronuncia muy rápido y débil (/kn/). En 'I can't go', la 'T' final es seca y el sonido vocal es más largo.",
+                            ex: [
+                                { en: "I can do it.", es: "Puedo hacerlo (Rápido).", a: "I can do it" },
+                                { en: "I can't do it.", es: "No puedo hacerlo (Fuerte).", a: "I can't do it" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: "m8", icon: "🕰️", title: "Pasado Simple (To Be)", desc: "Was y Were.",
+                    content: [
+                        {
+                            title: "1. Transformación",
+                            tag: "RULE",
+                            text: "El pasado de 'Am' e 'Is' es WAS. El pasado de 'Are' es WERE.",
+                            ex: [
+                                { en: "I was tired.", es: "Estaba cansado.", a: "I was tired" },
+                                { en: "They were friends.", es: "Eran amigos.", a: "They were friends" }
+                            ]
+                        },
+                        {
+                            title: "2. Nacer (Born)",
+                            tag: "TIP",
+                            text: "En español decimos 'Yo nací' (verbo activo). En inglés se dice 'Yo fui nacido' (pasivo). Por eso siempre usamos 'I was born'.",
+                            ex: [{ en: "I was born in 1995.", es: "Nací en 1995.", a: "I was born in 1995" }]
+                        }
+                    ]
+                }
+            ],
+            // GAMES DATA (Ampliada)
+            games: {
+                quiz: [
+                    { q: "I ___ ready.", a: "am", o: ["is", "am", "are"] }, { q: "She ___ a doctor.", a: "is", o: ["am", "is", "are"] },
+                    { q: "They ___ here.", a: "are", o: ["am", "is", "are"] }, { q: "___ you happy?", a: "Are", o: ["Is", "Am", "Are"] },
+                    { q: "He ___ not know.", a: "does", o: ["do", "does", "is"] }, { q: "___ she work?", a: "Does", o: ["Do", "Does", "Is"] },
+                    { q: "I ___ swim.", a: "can", o: ["can", "cans", "to can"] }, { q: "We ___ at home.", a: "are", o: ["am", "is", "are"] },
+                    { q: "Yesterday I ___ sad.", a: "was", o: ["were", "was", "is"] }, { q: "The book is ___ the table.", a: "on", o: ["in", "on", "at"] }
+                ],
+                detective: [
+                    { bad: "She work in a bank", good: "works", full: "She works in a bank", err: "work" },
+                    { bad: "I have 20 years old", good: "am", full: "I am 20 years old", err: "have" },
+                    { bad: "He don't like it", good: "doesn't", full: "He doesn't like it", err: "don't" },
+                    { bad: "The car red is fast", good: "red car", full: "The red car is fast", err: "car" },
+                    { bad: "I can to go", good: "go", full: "I can go", err: "to" },
+                    { bad: "Are you agree?", good: "Do", full: "Do you agree?", err: "Are" },
+                    { bad: "She is in home", good: "at", full: "She is at home", err: "in" }
+                ],
+                tennis: [
+                    { v: "GO", o: ["WENT", "GOED"], a: "WENT" }, { v: "HAVE", o: ["HAD", "HAVED"], a: "HAD" },
+                    { v: "DO", o: ["DID", "DONE"], a: "DID" }, { v: "SEE", o: ["SAW", "SEED"], a: "SAW" },
+                    { v: "EAT", o: ["ATE", "EATED"], a: "ATE" }, { v: "BUY", o: ["BOUGHT", "BUYED"], a: "BOUGHT" }
+                ],
+                scramble: [
+                    { t: "I am very happy", a: "I am very happy" }, { t: "Where is the station", a: "Where is the station" },
+                    { t: "She can speak English", a: "She can speak English" }, { t: "I was born in May", a: "I was born in May" },
+                    { t: "Do you like pizza", a: "Do you like pizza" }
+                ],
+                flash: [
+                    { f: "Book", b: "Libro" }, { f: "House", b: "Casa" }, { f: "Money", b: "Dinero" }, { f: "Time", b: "Tiempo" },
+                    { f: "Friend", b: "Amigo" }, { f: "Water", b: "Agua" }, { f: "Job", b: "Trabajo" }, { f: "City", b: "Ciudad" }
+                ],
+                dict: ["Hello", "Good morning", "I am ready", "Open the door", "She is nice", "I have a car"],
+                /* AÑADIR ESTO DENTRO DE DB.games (pon una coma después del array anterior) */
+                speech: [
+                    { t: "I would like a cup of coffee", h: "Me gustaría una taza de café" },
+                    { t: "Where is the nearest subway station?", h: "¿Dónde está la estación de metro más cercana?" },
+                    { t: "Can you help me with this?", h: "¿Me puedes ayudar con esto?" },
+                    { t: "It is a beautiful day outside", h: "Es un día hermoso afuera" },
+                    { t: "I am learning to speak English", h: "Estoy aprendiendo a hablar inglés" },
+                    { t: "How much does this cost?", h: "¿Cuánto cuesta esto?" }
+                ]
+            },
+            // CHAT SCENARIOS
+            chats: {
+                intro: [
+                    { b: "Hello! I am Sarah.", o: ["Hi Sarah! I am Alex.", "Who are you?"] },
+                    { b: "Nice to meet you. Are you new?", o: ["Yes, I am.", "No, I am not."] },
+                    { b: "Welcome! Where are you from?", o: ["I am from Spain.", "Spain."] },
+                    { b: "I love Spain! See you later.", o: ["Bye!", "See you."] }
+                ],
+                job: [
+                    { b: "Good morning. Please sit down.", o: ["Thank you.", "Ok."] },
+                    { b: "Tell me, do you have experience?", o: ["Yes, I have 5 years.", "No, I don't."] },
+                    { b: "Great. Can you use computers?", o: ["Yes, I can.", "No."] },
+                    { b: "We will call you. Goodbye.", o: ["Thank you, bye.", "Bye."] }
+                ],
+                coffee: [
+                    { b: "Hi! What would you like?", o: ["A coffee, please.", "Coffee."] },
+                    { b: "Milk and sugar?", o: ["Yes, please.", "No, black."] },
+                    { b: "Anything else?", o: ["A cookie, please.", "No, thanks."] },
+                    { b: "That is $5 dollars.", o: ["Here you go.", "Take it."] }
+                ]
+            }
+        };
+
+        /* ====================================================================================
+           2. APP CORE (LOGIC)
+           ==================================================================================== */
+        let app = { xp: 0, streak: 1, done: [] };
+        const synth = window.speechSynthesis;
+
+        function init() {
+            const s = localStorage.getItem('engOS17');
+            if (s) app = JSON.parse(s);
+            updateXP();
+            renderModules();
+        }
+        function save() { localStorage.setItem('engOS17', JSON.stringify(app)); updateXP(); }
+        function updateXP() {
+            document.getElementById('xp-disp').innerText = app.xp;
+            if (app.xp >= 5000) {
+                document.getElementById('cert-lock').style.display = 'none';
+                document.getElementById('cert-display').classList.remove('hidden');
+            }
+        }
+        function addXP(n) { app.xp += n; save(); }
+        function resetApp() { if (confirm("¿Borrar todo?")) { localStorage.removeItem('engOS17'); location.reload(); } }
+        function toggleTheme() { document.body.classList.toggle('dark'); }
+        function nav(id, btn) {
+            document.querySelectorAll('.screen').forEach(x => x.classList.remove('active'));
+            document.getElementById('screen-' + id).classList.add('active');
+            if (btn) { document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+        }
+        function speak(txt) {
+            synth.cancel(); const u = new SpeechSynthesisUtterance(txt); u.lang = 'en-US'; u.rate = 0.9;
+            const v = synth.getVoices().find(x => x.name.includes("Google US")); if (v) u.voice = v;
+            synth.speak(u);
+        }
+
+        /* ====================================================================================
+           3. MODULE READER ENGINE
+           ==================================================================================== */
+        let activeMod = null;
+        function renderModules() {
+            const list = document.getElementById('mod-list'); list.innerHTML = '';
+            DB.modules.forEach((m, i) => {
+                const locked = i > 0 && !app.done.includes(DB.modules[i - 1].id);
+                const done = app.done.includes(m.id);
+                list.innerHTML += `
+        <div class="card ${locked ? 'locked' : ''} ${done ? 'done' : ''}" onclick="${locked ? '' : 'openModule(\'' + m.id + '\')'}">
+            <div class="card-head"><div class="card-icon">${m.icon}</div><div><strong>${m.title}</strong><br><small>${m.desc}</small></div></div>
+            <div class="card-check">✔</div>
         </div>`;
-    });
+            });
+        }
+        function openModule(id) {
+            activeMod = id;
+            const m = DB.modules.find(x => x.id === id);
+            document.getElementById('reader-title').innerText = m.title;
+            const c = document.getElementById('reader-content'); c.innerHTML = '';
 
-    document.getElementById('ui-reader').style.display = 'flex';
-}
+            m.content.forEach(sect => {
+                let tClass = sect.tag === 'RULE' ? 'tag-rule' : (sect.tag === 'WARN' ? 'tag-warn' : 'tag-pro');
+                let html = `
+        <div class="theory-block">
+            <div class="theory-h3"><span class="tag ${tClass}">${sect.tag}</span> ${sect.title}</div>
+            <div class="theory-text">${sect.text}</div>
+            <table class="ex-table">
+                ${sect.ex.map(e => `
+                <tr>
+                    <td>
+                        <div class="ex-en">${e.en}</div>
+                        <div class="ex-es">${e.es}</div>
+                    </td>
+                    <td style="width:40px"><div class="btn-speak-sm" onclick="speak('${e.a}')">🔊</div></td>
+                </tr>`).join('')}
+            </table>
+        </div>`;
+                c.innerHTML += html;
+            });
+            document.getElementById('reader').style.display = 'flex';
+        }
+        function closeReader() { document.getElementById('reader').style.display = 'none'; }
+        function finishModule() {
+            if (!app.done.includes(activeMod)) { app.done.push(activeMod); addXP(100); alert("¡Lección Completada! +100 XP"); }
+            renderModules(); closeReader();
+        }
 
-function finishModule() {
-    closeOverlay();
-    updateXP(100);
-    alert("¡Excelente! Has sumado conocimiento.");
-}
+        /* ====================================================================================
+           4. GAME ENGINE (ROBUST)
+           ==================================================================================== */
+        function startGame(type) {
+            document.getElementById('game-ui').style.display = 'flex';
+            document.getElementById('game-engine').innerHTML = ''; // Clear prev
 
-function speak(txt) {
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(txt);
-    u.lang = 'en-US';
-    window.speechSynthesis.speak(u);
-}
-init();
-</script>
+            if (type === 'quiz') playQuiz();
+            if (type === 'scramble') playScramble();
+            if (type === 'detective') playDetective();
+            if (type === 'tennis') playTennis();
+            if (type === 'flash') playFlash();
+            if (type === 'dict') playDict();
+        }
+        function closeGame() { document.getElementById('game-ui').style.display = 'none'; }
+
+        // 1. QUIZ
+        let qIdx = 0;
+        function playQuiz() {
+            qIdx = 0; renderQuiz();
+        }
+        function renderQuiz() {
+            const div = document.getElementById('game-engine');
+            if (qIdx >= DB.games.quiz.length) { div.innerHTML = "<h3>¡Fin del Quiz!</h3>"; addXP(20); return; }
+            const q = DB.games.quiz[qIdx];
+            div.innerHTML = `
+        <div class="q-card">
+            <div class="q-text">${q.q.replace('___', '_____')}</div>
+            <div id="opts-area"></div>
+            <div id="fb-area" style="height:20px; font-weight:bold; margin-top:10px;"></div>
+        </div>
+    `;
+            const oa = document.getElementById('opts-area');
+            q.o.forEach(opt => {
+                const b = document.createElement('button'); b.className = 'opt-btn'; b.innerText = opt;
+                b.onclick = () => {
+                    if (opt === q.a) { b.className += ' correct'; document.getElementById('fb-area').innerText = "¡Bien!"; addXP(5); }
+                    else { b.className += ' wrong'; }
+                    setTimeout(() => { qIdx++; renderQuiz(); }, 800);
+                };
+                oa.appendChild(b);
+            });
+        }
+
+        // 2. SCRAMBLE
+        let sIdx = 0;
+        function playScramble() { sIdx = 0; renderScramble(); }
+        function renderScramble() {
+            const div = document.getElementById('game-engine');
+            if (sIdx >= DB.games.scramble.length) { div.innerHTML = "<h3>¡Completado!</h3>"; addXP(20); return; }
+            const d = DB.games.scramble[sIdx];
+
+            div.innerHTML = `
+        <div style="width:100%; text-align:center;">
+            <p>Ordena la frase:</p>
+            <button onclick="speak('${d.t}')" style="margin-bottom:10px; padding:5px 10px; border-radius:15px; border:1px solid #ccc; background:#fff;">🔈 Escuchar</button>
+            <div id="scr-target" class="scramble-area" style="border-color:var(--success); background:#f0fdf4;"></div>
+            <div id="scr-source" class="scramble-area"></div>
+        </div>
+    `;
+
+            const target = document.getElementById('scr-target');
+            const source = document.getElementById('scr-source');
+
+            d.t.split(' ').sort(() => Math.random() - 0.5).forEach(w => {
+                const c = document.createElement('div'); c.className = 'chip'; c.innerText = w;
+                c.onclick = () => {
+                    if (c.parentElement === source) target.appendChild(c); else source.appendChild(c);
+                    checkScramble(d.t);
+                };
+                source.appendChild(c);
+            });
+        }
+        function checkScramble(correct) {
+            const current = Array.from(document.getElementById('scr-target').children).map(x => x.innerText).join(' ');
+            if (current === correct) { addXP(10); setTimeout(() => { sIdx++; renderScramble(); }, 800); }
+        }
+
+        // 3. DETECTIVE
+        let dIdx = 0;
+        function playDetective() { dIdx = 0; renderDetective(); }
+        function renderDetective() {
+            const div = document.getElementById('game-engine');
+            if (dIdx >= DB.games.detective.length) { div.innerHTML = "<h3>¡Caso Cerrado!</h3>"; addXP(30); return; }
+            const d = DB.games.detective[dIdx];
+
+            div.innerHTML = `<div style="text-align:center; width:100%;"><h3>Encuentra el error</h3><div id="det-box" style="font-size:1.3rem; margin:20px 0;"></div><div id="det-msg" style="font-weight:bold; height:30px;"></div></div>`;
+
+            const box = document.getElementById('det-box');
+            d.bad.split(' ').forEach(w => {
+                const s = document.createElement('span'); s.className = 'det-word'; s.innerText = w;
+                s.onclick = () => {
+                    if (w.toLowerCase().includes(d.err.toLowerCase())) {
+                        s.className += ' err'; s.innerText = d.good;
+                        document.getElementById('det-msg').innerHTML = "<span style='color:green'>¡Corregido!</span>";
+                        speak(d.full);
+                        setTimeout(() => { dIdx++; renderDetective(); }, 1500);
+                    } else {
+                        s.style.opacity = '0.5';
+                    }
+                };
+                box.appendChild(s);
+            });
+        }
+
+        // 4. TENNIS
+        let tIdx = 0;
+        function playTennis() { tIdx = 0; renderTennis(); }
+        function renderTennis() {
+            const div = document.getElementById('game-engine');
+            if (tIdx >= DB.games.tennis.length) { div.innerHTML = "<h3>¡Partido Ganado!</h3>"; addXP(20); return; }
+            const d = DB.games.tennis[tIdx];
+
+            div.innerHTML = `
+        <div style="text-align:center; width:100%;">
+            <p>PASADO DE:</p>
+            <h1 style="font-size:3rem; margin:10px 0;">${d.v}</h1>
+            <div id="ten-opts" style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:30px;"></div>
+        </div>
+    `;
+
+            d.o.forEach(opt => {
+                const b = document.createElement('button'); b.className = 'opt-btn'; b.innerText = opt;
+                b.onclick = () => {
+                    if (opt === d.a) { b.className += ' correct'; addXP(5); setTimeout(() => { tIdx++; renderTennis(); }, 600); }
+                    else { b.className += ' wrong'; }
+                };
+                document.getElementById('ten-opts').appendChild(b);
+            });
+        }
+
+        // 5. FLASHCARDS
+        let fIdx = 0;
+        function playFlash() { fIdx = 0; renderFlash(); }
+        function renderFlash() {
+            const div = document.getElementById('game-engine');
+            if (fIdx >= DB.games.flash.length) fIdx = 0; // Loop
+            const d = DB.games.flash[fIdx];
+
+            div.innerHTML = `
+        <div style="width:100%; max-width:400px;">
+            <div class="flash-scene">
+                <div class="flash-card" onclick="this.classList.toggle('flipped'); if(this.classList.contains('flipped')) speak('${d.f}')">
+                    <div class="flash-face flash-front">${d.f}</div>
+                    <div class="flash-face flash-back">${d.b}</div>
+                </div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn-main" style="background:var(--error)" onclick="nextFlash()">Difícil</button>
+                <button class="btn-main" style="background:var(--success)" onclick="nextFlash(true)">Fácil</button>
+            </div>
+        </div>
+    `;
+        }
+        function nextFlash(score) { if (score) addXP(2); fIdx++; renderFlash(); }
+
+        // 6. DICTATION
+        let diIdx = 0;
+        function playDict() { diIdx = 0; renderDict(); }
+        function renderDict() {
+            const div = document.getElementById('game-engine');
+            if (diIdx >= DB.games.dict.length) { div.innerHTML = "<h3>¡Oído Perfecto!</h3>"; addXP(20); return; }
+
+            div.innerHTML = `
+        <div style="text-align:center; width:100%;">
+            <div onclick="speak('${DB.games.dict[diIdx]}')" style="width:80px; height:80px; background:var(--primary); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2rem; margin:0 auto 20px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2);">🔊</div>
+            <input type="text" id="dict-in" style="width:100%; padding:15px; border-radius:10px; border:2px solid #ddd; text-align:center; font-size:1.2rem; margin-bottom:15px;" placeholder="Escribe aquí...">
+            <button class="btn-main" onclick="checkDict()">Comprobar</button>
+            <div id="dict-fb" style="margin-top:15px; font-weight:bold;"></div>
+        </div>
+    `;
+        }
+        function checkDict() {
+            const v = document.getElementById('dict-in').value.trim().toLowerCase();
+            const a = DB.games.dict[diIdx].toLowerCase();
+            if (v === a || v === a.replace('.', '')) {
+                document.getElementById('dict-fb').innerHTML = "<span style='color:green'>¡Correcto!</span>";
+                addXP(10); setTimeout(() => { diIdx++; renderDict(); }, 1000);
+            } else {
+                document.getElementById('dict-fb').innerHTML = "<span style='color:red'>Intenta de nuevo</span>";
+            }
+        }
+
+        /* ====================================================================================
+           5. CHAT ENGINE (WHATSAPP STYLE)
+           ==================================================================================== */
+        let chatQ = []; let cI = 0;
+        function openChat(id) {
+            chatQ = DB.chats[id]; cI = 0;
+            document.getElementById('chat-ui').style.display = 'flex';
+            document.getElementById('chat-feed').innerHTML = '';
+            stepChat();
+        }
+        function closeChat() { document.getElementById('chat-ui').style.display = 'none'; }
+
+        function stepChat() {
+            if (cI >= chatQ.length) {
+                document.getElementById('chat-opts').innerHTML = `<div style="text-align:center; color:#888;">Chat Finalizado</div>`;
+                addXP(15); return;
+            }
+            const s = chatQ[cI];
+            const feed = document.getElementById('chat-feed');
+
+            // Bot
+            const b = document.createElement('div'); b.className = 'bubble bot'; b.innerText = s.b;
+            feed.appendChild(b);
+            speak(s.b);
+            feed.scrollTop = feed.scrollHeight;
+
+            // Opts
+            const opts = document.getElementById('chat-opts'); opts.innerHTML = '';
+            s.o.forEach(txt => {
+                const d = document.createElement('div'); d.className = 'reply-pill'; d.innerText = txt;
+                d.onclick = () => {
+                    const u = document.createElement('div'); u.className = 'bubble user'; u.innerText = txt;
+                    feed.appendChild(u);
+                    opts.innerHTML = '';
+                    feed.scrollTop = feed.scrollHeight;
+                    cI++; setTimeout(stepChat, 1000);
+                };
+                opts.appendChild(d);
+            });
+        }
+        /* ====================================================================================
+   6. SPEAKING LAB ENGINE (AI VOICE RECOGNITION)
+   ==================================================================================== */
+        let spIdx = 0;
+        let recognition;
+
+        // Configurar reconocimiento si el navegador lo soporta
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+        } else {
+            alert("Tu navegador no soporta reconocimiento de voz (Usa Chrome/Edge/Safari).");
+        }
+
+        function playSpeech() { spIdx = 0; renderSpeech(); }
+
+        function renderSpeech() {
+            const div = document.getElementById('game-engine');
+
+            // Verificar final del juego
+            if (spIdx >= DB.games.speech.length) {
+                div.innerHTML = "<h3>¡Sesión de Voz Finalizada!</h3><p>Tu pronunciación ha mejorado.</p>";
+                addXP(50);
+                return;
+            }
+
+            const d = DB.games.speech[spIdx];
+
+            div.innerHTML = `
+        <div style="text-align:center; width:100%;">
+            <p style="color:var(--text-sub); margin-bottom:5px;">Lee en voz alta:</p>
+            <h2 style="margin:10px 0; color:var(--primary);">"${d.t}"</h2>
+            <p style="font-size:0.9rem; color:#888;">(${d.h})</p>
+            
+            <button class="btn-speak-sm" onclick="speak('${d.t}')" style="margin: 10px auto;">🔈 Oír modelo</button>
+
+            <button id="mic-trigger" class="mic-btn" onclick="toggleMic()">🎙️</button>
+            <p id="mic-status" style="font-weight:bold; height:20px;">Toca para hablar</p>
+
+            <div id="ai-feedback" class="speech-fb"></div>
+            
+            <button id="next-speech" class="btn-main hidden" onclick="nextSpeech()" style="margin-top:20px;">Siguiente ➡</button>
+        </div>
+    `;
+        }
+
+        function toggleMic() {
+            if (!recognition) return alert("Navegador no compatible");
+            const btn = document.getElementById('mic-trigger');
+            const stat = document.getElementById('mic-status');
+            const fb = document.getElementById('ai-feedback');
+
+            // Limpiar feedback anterior
+            fb.style.display = 'none';
+            fb.innerHTML = '';
+
+            try {
+                recognition.start();
+                btn.classList.add('listening');
+                stat.innerText = "Escuchando...";
+
+                recognition.onresult = (event) => {
+                    const heard = event.results[0][0].transcript;
+                    analyzePronunciation(heard);
+                };
+
+                recognition.onerror = (event) => {
+                    btn.classList.remove('listening');
+                    stat.innerText = "Error: Intenta de nuevo";
+                };
+
+                recognition.onend = () => {
+                    btn.classList.remove('listening');
+                    if (stat.innerText === "Escuchando...") stat.innerText = "Procesando...";
+                };
+            } catch (e) {
+                console.error(e);
+                stat.innerText = "Error al iniciar micrófono";
+            }
+        }
+
+        function analyzePronunciation(heardText) {
+            const target = DB.games.speech[spIdx].t;
+            const cleanHeard = heardText.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").trim();
+            const cleanTarget = target.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").trim();
+
+            const fb = document.getElementById('ai-feedback');
+            const stat = document.getElementById('mic-status');
+            const nextBtn = document.getElementById('next-speech');
+
+            fb.style.display = 'block';
+
+            // Lógica simple de comparación "AI"
+            if (cleanHeard === cleanTarget) {
+                stat.innerHTML = "<span style='color:var(--success)'>¡Perfecto!</span>";
+                fb.innerHTML = `<strong>AI Analysis:</strong><br>Excellent pronunciation. Match: 100%`;
+                fb.style.borderLeft = "5px solid var(--success)";
+                speak("Excellent job! Perfect pronunciation.");
+                addXP(10);
+                nextBtn.classList.remove('hidden');
+            } else {
+                stat.innerText = "Intenta de nuevo";
+                fb.innerHTML = `
+            <strong>AI Analysis:</strong><br>
+            Expected: "${target}"<br>
+            Heard: "<span style='color:var(--error)'>${heardText}</span>"<br>
+            <small>Asegúrate de pronunciar todas las palabras claramente.</small>
+        `;
+                fb.style.borderLeft = "5px solid var(--error)";
+                speak("Close, but try again.");
+            }
+        }
+
+        function nextSpeech() {
+            spIdx++;
+            renderSpeech();
+        }
+        // Init
+        speechSynthesis.onvoiceschanged = () => { };
+        init();
+    </script>
 </body>
+
 </html>
